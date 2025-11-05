@@ -1,0 +1,5 @@
+# Pega a imagem do PHP com Apache
+FROM php:8.2-apache
+
+# Instala a extensão para conectar com MySQL
+RUN docker-php-ext-install pdo_mysql

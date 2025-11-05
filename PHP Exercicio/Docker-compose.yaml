@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  # 1. Serviço Web (PHP)
+  web:
+    build:
+      context: ./php         # A pasta onde o Dockerfile está é a './php'
+      dockerfile: dockerfile # O nome exato do seu arquivo (está minúsculo na imagem)
+    ports:
+      - "8080:80"            # Expõe a porta 8080
+    volumes:
+      - ./php/src:/var/www/html # Mapeia seu código PHP para o contêiner
+    environment:
+      # Variáveis para o PHP se conectar ao banco
+      - DB_HOST=db
+      - DB_DATABASE=meu_banco
+      - DB_USER=usuario
+      - DB_PASSWORD=senha
+    depends_on:
+      - db                   # Espera o serviço 'db' iniciar
+    networks:
+      - app-network
+
+  # 2. Serviço de Banco de Dados (MySQL)
+  db:
+    image: mysql:8.0
+    environment:
+      # Credenciais para o MySQL criar o banco
+      MYSQL_DATABASE: meu_banco
+      MYSQL_USER: usuario
+      MYSQL_PASSWORD: senha
+      MYSQL_ROOT_PASSWORD: root 
+    volumes:
+      # Mapeia a sua pasta 'db' (que contém o 'db.sql')
+      # para a pasta de inicialização do MySQL
+      - ./db:/docker-entrypoint-initdb.d 
+    networks:
+      - app-network
+
+# Rede para os contêineres se comunicarem
+networks:
+  app-network:
